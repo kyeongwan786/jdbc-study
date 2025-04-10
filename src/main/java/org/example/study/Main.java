@@ -60,6 +60,10 @@ public class Main {
 
     }
 
+    private static void deleteStockById(Connection connection, String id) {
+        // 전달받은 id 로 레코드를 삭제하는 메서드 ㄱ
+    }
+
     private static void insertStocks(Connection connection, StockEntity[] stocks) throws SQLException {// throws 메서드에 전가
         int lastProgress = 0;
         int done = 0;
