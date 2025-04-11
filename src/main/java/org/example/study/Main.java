@@ -10,10 +10,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.LocalDateTime;
 
 public class Main {
@@ -60,9 +57,24 @@ public class Main {
 
     }
 
-    private static void deleteStockById(Connection connection, String id) {
+    private static void deleteStockById(Connection connection, String id) throws SQLException {
         // 전달받은 id 로 레코드를 삭제하는 메서드 ㄱ
-    }
+        final String query = """
+                SELECT id, isin, market, display_text, create_at
+                FROM `jdbc_study`.`stocks`
+                WHERE `id` = ?
+                """;
+        PreparedStatement stmt = connection.prepareStatement(query);
+        stmt.setString(1, id);
+        ResultSet resultSet = stmt.executeQuery();
+        //executeQuery 메서드는 SELECT 쿼리를 실행하고 결과를 가지게 되는 rESULTsET 객체를 반환한다.
+        // 안타깝게도 ResultSet 객체는 배열처럼 인덱스로 접근할수는 없고, 반환되는 레코드의 개수도 알 수 없어서 next() 메서드를 호출하여, 지칭할 수 있는(Pointing) 다음 레코드가 있는지의 여부를 반환 받음과 동시에 다음 레코드를 지칭하여 각 열의 값을 가지고 올 수 있는 구조이다. 만약 next() 메서드의 호출 결과가 false 라면 호출 전 레코드가 마지막 레코드였다는 의미이고,. 처음부터 nexT() 호출 겨로가가 false 였다면, 쿼리 실행 결과 반환되는 레코드가 없었다는 읨이다.
+        if (!resultSet.next()) {
+            // 애초에 nexT() 메서드 호출 겨로가가 false 라는 것은 전달 받은 id 와 일치하는 레코드가 없다는 의미 임으로 null을 반환해준다.
+            return null;
+        }
+        // !!! 위 if 문에서
+
 
     private static void insertStocks(Connection connection, StockEntity[] stocks) throws SQLException {// throws 메서드에 전가
         int lastProgress = 0;
